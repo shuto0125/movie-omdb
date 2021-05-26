@@ -7,7 +7,7 @@ const Movie = ({ movie }) => {
   const poster =
     movie.Poster === "N/A" ? DEFAULT_PLACEHOLDER_IMAGE : movie.Poster;
   return (
-    <div className="movie">
+    <div className="movie" onClick={() => console.log(movie)}>
       <h2>{movie.Title}</h2>
       <div>
         <img
