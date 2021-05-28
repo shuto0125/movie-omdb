@@ -1,8 +1,9 @@
-import React, { useReducer, useEffect } from "react";
+import React, { useReducer, useEffect, useContext } from "react";
 import "../App.css";
 import Header from "./Header";
 import Movie from "./Movie";
 import Search from "./Search";
+import { FavContext } from "./store";
 
 const MOVIE_API_URL = "https://www.omdbapi.com/?s=man&apikey=4a3b711b";
 
@@ -38,6 +39,21 @@ const reducer = (state, action) => {
 };
 
 const App = () => {
+  const { favMovies, setFavMovies, myName, countFavMovies, setCountFavMovies } =
+    useContext(FavContext);
+  // localstorageのfavMoviesをobjectに変換する
+  const favAry = JSON.parse(localStorage.getItem("favMovies"));
+
+  // localstorageの値をstateに保存
+  useEffect(() => {
+    setFavMovies(favAry);
+  }, []);
+  // stateの値をlocalstorageに保存
+  useEffect(() => {
+    localStorage.setItem("favMovies", JSON.stringify(favMovies));
+    setCountFavMovies(Object.keys(favMovies).length);
+  }, [favMovies]);
+
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
@@ -80,6 +96,7 @@ const App = () => {
       <Header text="HOOKED" />
       <Search search={search} />
       <p className="App-intro">Sharing a few of our favourite movies</p>
+      {/* <p>{favMovies[0]}</p> */}
       <div className="movies">
         {loading && !errorMessage ? (
           <span>loading... </span>

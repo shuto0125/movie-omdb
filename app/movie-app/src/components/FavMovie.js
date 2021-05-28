@@ -1,20 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import "../App.css";
 import Header from "./Header";
-import Movie from "./Movie";
+
+import { FavContext } from "./store";
 
 const cardListStyle = {
   padding: "10px",
   listStyle: "none",
 };
 const cardStyle = {
+  width: "25%",
   borderRadius: "10px",
   padding: "15px",
   marginBottom: "10px",
   boxShadow: "0 0 5px rgba(0,0,0,0.1)",
   display: "flex",
-  justifyContent: "space-between",
+  flexDirection: "column",
+  justifyContent: "start",
   alignItems: "center",
+};
+const cardTitleStyle = {
+  fontWeight: "bold",
+};
+const cardPosterStyle = {
+  width: "100%",
+  height: "auto",
 };
 const movieDataWrapStyle = {
   textAlign: "left",
@@ -30,45 +40,35 @@ const deleteButtonStyle = {
   borderRadius: "50%",
   fontSize: "20px",
   fontWeight: "bold",
+  lineHeight: "1em",
   cursor: "pointer",
 };
-const favAry = [
-  {
-    name: "movie1",
-    imageUrl: "https://google.co.jp",
-  },
-  {
-    name: "movie2",
-    imageUrl: "https://google.co.jp",
-  },
-  {
-    name: "movie3",
-    imageUrl: "https://google.co.jp",
-  },
-  {
-    name: "movie4",
-    imageUrl: "https://google.co.jp",
-  },
-];
-export const MyMovie = ({ movie }) => {
-  // Similar to useState but first arg is key to the value in local storage.
-  // const [name, setName] = useLocalStorage("name", "Bob");
 
-  const [favMovies, setFavMovies] = useState(favAry);
-  // console.log(favAry);
+export const FavMoviePage = ({ movie }) => {
+  const { favMovies, setFavMovies, myName, countFavMovies, setCountFavMovies } =
+    useContext(FavContext);
 
+  // localstorageのfavMoviesをobjectに変換する
+  const favAry = JSON.parse(localStorage.getItem("favMovies"));
+
+  // localstorageの値をstateに保存
   useEffect(() => {
-    console.log(favMovies);
-
-    //JSON.stringifyした上で、localStorageに保存します。
+    setFavMovies(favAry);
+  }, []);
+  // stateの値をlocalstorageに保存
+  useEffect(() => {
     localStorage.setItem("favMovies", JSON.stringify(favMovies));
+    setCountFavMovies(Object.keys(favMovies).length);
   }, [favMovies]);
 
   const addMovie = () => {
+    const randNum = Math.random();
     const newMovie = {
-      name: Math.random() > 0.5 ? "きのこ" : "たけのこ",
-      imageUrl:
-        "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png",
+      Title: randNum > 0.5 ? "きのこ" : "たけのこ",
+      Poster:
+        randNum > 0.5
+          ? "https://images.unsplash.com/photo-1542417938-e59c0a54102b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80"
+          : "https://cdn.pixabay.com/photo/2020/03/26/01/37/bamboo-shoot-4968949_960_720.jpg",
     };
     // 現在の favMovies に newMovie を追加した配列を setFavMovies に渡す。
     setFavMovies([...favMovies, newMovie]);
@@ -85,16 +85,18 @@ export const MyMovie = ({ movie }) => {
     <div className="App">
       <Header text="HOOKED" />
       <h3 className="App-intro">KAITANI's favourite movies</h3>
-      <button onClick={addMovie}>Add きのこ Movie</button>
-      <div className="movies"></div>
 
-      <ul style={cardListStyle}>
+      <button onClick={addMovie}>Add きのこ or たけのこ</button>
+
+      <ul className="movies" style={cardListStyle}>
         {favMovies.map((item, index) => (
           <li style={cardStyle}>
-            <span style={movieDataWrapStyle}>
-              <p>{item.name}</p>
-              <img src={item.imageUrl} />
-            </span>
+            <div style={movieDataWrapStyle}>
+              <p style={cardTitleStyle}>{item.Title}</p>
+              <img src={item.Poster} style={cardPosterStyle} />
+            </div>
+            <p>({item.Year})</p>
+            <p>imdbID: {item.imdbID}</p>
             <span style={deleteButtonStyle} onClick={() => deleteMovie(index)}>
               ×
             </span>

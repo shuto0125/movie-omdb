@@ -1,12 +1,26 @@
-import React from "react";
+import React, { useContext } from "react";
+import { FavContext } from "./store";
 
 const Header = (props) => {
+  const { favMovies, setFavMovies, myName, countFavMovies, setCountFavMovies } =
+    useContext(FavContext);
+
   return (
     <header className="App-header">
       <h2>
-        <a href="/">{props.text}</a>
+        <a href="/">Movie Search</a>
       </h2>
-      <a href="/my-movie">myMovies</a>
+      <a
+        href="/fav-movie"
+        style={{
+          backgroundColor: "#ffffff",
+          color: "#333",
+          padding: "3px 10px",
+          borderRadius: "30px",
+        }}
+      >
+        favMovies ({countFavMovies})
+      </a>
     </header>
   );
 };
